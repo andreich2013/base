@@ -1,0 +1,36 @@
+{
+  "name": "grunt-tip-install",
+  "description": "Grunt Task for Installing Tip Dependencies",
+  "version": "0.0.4",
+  "license": "MIT",
+  "author": {
+    "name": "S Kireykov"
+  },
+  "devDependencies": {
+    "grunt": "~0.4.5",
+    "grunt-cli": "~0.1.13",
+    "grunt-contrib-jshint": "~0.11.2",
+    "grunt-contrib-clean": "~0.6.0",
+    "grunt-eslint": "~17.0.0"
+  },
+  "dependencies": {
+    "bower": "~1.4.1",
+    "chalk": "~1.1.0"
+  },
+  "peerDependencies": {
+    "grunt": ">=0.4.0"
+  },
+  "engines": {
+    "node": ">=0.10.0"
+  },
+  "_id": "tip-install@0.0.1",
+  "scripts": {
+    "test": "grunt test"
+  },
+  "files": [
+    "tasks",
+    "libs",
+    "NuGet.Config"
+  ],
+  "directories": {}
+}
