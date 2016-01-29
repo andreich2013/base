@@ -3,10 +3,10 @@
 
     angular
         .module('reeldeal')
-        .controller('rd.main.controller', Controller);
+        .provider('rdContext', Service);
 
     /** @ngInject */
-    function Controller($scope) {
+    function Service() {
 
     }
 

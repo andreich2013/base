@@ -2,5 +2,5 @@
 .idea
 .sass-cache
 node_modules
-bower_components
+project/bower_components
 dist

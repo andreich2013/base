@@ -2,40 +2,32 @@
 'use strict';
 
 module.exports = function (grunt) {
+    var chalk         = require("chalk");
+    var bower         = require("bower");
+    var bowerRenderer = require("bower/lib/renderers/StandardRenderer");
+
     // Load grunt tasks automatically
     require('load-grunt-tasks')(grunt);
 
     // Time how long tasks take
     require('time-grunt')(grunt);
 
-    var bower = require("bower");
-    var bowerRenderer = require("bower/lib/renderers/StandardRenderer");
-
     // Configurable paths for the application
     var appConfig = {
+            name: "reeldeal",
             root: 'project',
             app: './project/app',
-            bower: './project/app/bower_components',
+            bower: './project/bower_components',
             assets: './project/assets',
-            dist: './dist'
+            dist: './dist',
+            config: './config'
         },
         modRewrite = require('connect-modrewrite');
-
-    //appConfig.pkg = require('./tip.pckg.json');
-
-    //var tipPortalDemoConfig = grunt.file.readJSON(appConfig.root + '/layout.demo.config.json');
 
     // Define the configuration for all the tasks
     grunt.initConfig({
         // Project settings
-        rdmodule: {
-            name: "reeldeal",
-            root: 'project',
-            app: './project/app',
-            bower: './project/app/bower_components',
-            assets: './project/assets',
-            dist: './dist'
-        },
+        rdmodule: appConfig,
 
         // Watches files for changes and runs tasks based on the changed files
         watch: {
@@ -56,9 +48,8 @@ module.exports = function (grunt) {
                 },
                 files: [
                     '<%= rdmodule.app %>/**/*.{js,html}',
-                    '<%= rdmodule.assets %>/{,*/}*.css',
-                    '<%= rdmodule.assets %>/img/{,*/}*.{png,jpg,jpeg,gif,webp,svg}',
-                    '<%= rdmodule.assets %>/fixture/{,*/}*.json'
+                    '<%= rdmodule.assets %>/{,*/}*.{css,json}',
+                    '<%= rdmodule.assets %>/img/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             },
             //constants: {
@@ -153,7 +144,7 @@ module.exports = function (grunt) {
                 }]
             },
             //nuget: ["<%= rdmodule.packages %>", 'packages.config'],
-            install: ['packages.config', '<%= rdmodule.bower %>'],
+            install: ['<%= rdmodule.bower %>'],
             "after-package": ['<%= rdmodule.dist %>/**/*{demo,vendor}*.{js,css}']
         },
 
@@ -298,15 +289,6 @@ module.exports = function (grunt) {
 
         // Copies remaining files to places other tasks can use
         copy: {
-            //dev: {
-            //    files: [{
-            //        expand: true,
-            //        dot: true,
-            //        cwd: '<%= rdmodule.bower %>/Deloitte.TIP.AA.Client.UI/',
-            //        dest: '<%= rdmodule.assets %>/Deloitte.TIP.AA.Client.UI',
-            //        src: ['**/*.{html,js}', '!angular-*.js']
-            //    }]
-            //},
             dist: {
                 files: [
                 //{
@@ -419,18 +401,6 @@ module.exports = function (grunt) {
                 ],
                 dest: '.tmp/templateCache.js'
             },
-            //"dist-demo": {
-            //    options: {
-            //        module: '<%= rdmodule.pkg.name %>.demo',
-            //        usemin: 'scripts/<%= rdmodule.pkg.name %>.demo.js'
-            //    },
-            //    cwd: '<%= rdmodule.app %>',
-            //    src: [
-            //        'layout.demo*/**/*.html',
-            //        '!index.html'
-            //    ],
-            //    dest: '.tmp/demoTemplateCache.js'
-            //},
             test: {
                 options: {
                     usemin: undefined
@@ -445,29 +415,56 @@ module.exports = function (grunt) {
             }
         },
 
-        //ngconstant: {
-        //    options: {
-        //        deps: null,
-        //        wrap: true,
-        //        dest: '.tmp/layout.demo.config.js',
-        //        name: '<%= rdmodule.pkg.name %>.demo'
-        //    },
-        //    "demo-dev": {
-        //        constants: tipPortalDemoConfig.dev
-        //    },
-        //    "demo-qa": {
-        //        constants: tipPortalDemoConfig.qa
-        //    },
-        //    "demo-uat": {
-        //        constants: tipPortalDemoConfig.uat
-        //    }
-        //},
+        ngconstant: {
+            options: {
+                deps: null,
+                wrap: true,
+                dest: '<%= rdmodule.app %>/rd.env.js',
+                name: '<%= rdmodule.name %>'
+            },
+            "dev": {
+                constants: {
+                    "rdENV": grunt.file.readJSON(appConfig.config + '/dev.json')
+                }
+            },
+            "qa": {
+                constants: {
+                    "rdENV": grunt.file.readJSON(appConfig.config + '/qa.json')
+                }
+            },
+            "prod": {
+                constants: {
+                    "rdENV": grunt.file.readJSON(appConfig.config + '/prod.json')
+                }
+            },
+            "proto": {
+                constants: {
+                    "rdENV": grunt.file.readJSON(appConfig.config + '/proto.json')
+                }
+            },
+            "mvp": {
+                constants: {
+                    "rdENV": grunt.file.readJSON(appConfig.config + '/mvp.json')
+                }
+            },
+            "alpha": {
+                constants: {
+                    "rdENV": grunt.file.readJSON(appConfig.config + '/alpha.json')
+                }
+            },
+            "beta": {
+                constants: {
+                    "rdENV": grunt.file.readJSON(appConfig.config + '/beta.json')
+                }
+            }
+        },
 
         //'rd-install': {},
         //'rd-nuspec': {},
-        'rd-bower': {
+        'rd-bower-install': {
             dev: {
                 options: {
+                    directory: '<%= rdmodule.bower %>',
                     production: false,
                     forceLatest: true
                 }
@@ -476,82 +473,8 @@ module.exports = function (grunt) {
 
     });
 
-    grunt.registerTask('serve', 'Compile then start a "connect" web server', function (target) {
-        if (target === 'dist') {
-            return grunt.task.run([
-                'build',
-                'connect:dist:keepalive'
-            ]);
-        }
-
-        grunt.task.run([
-            //'concurrent:server',
-            'autoprefixer:server',
-            //'ngconstant:demo-dev',
-            'copy:dev',
-            'connect:livereload',
-            'watch'
-        ]);
-    });
-
-    //grunt.registerTask('test', [
-    //    'jshint:all',
-    //    'ngtemplates:test',
-    //    'karma'
-    //]);
-
-    grunt.registerTask('build', 'Build module together with demo', function () {
-        grunt.task.run([
-            'clean:dist',
-            'useminPrepare'
-        ]);
-
-        var target = grunt.option('target');
-
-        if (target === 'qa') {
-            grunt.task.run(['ngconstant:demo-qa']);
-        } else if (target === 'uat') {
-            grunt.task.run(['ngconstant:demo-uat']);
-        } else {
-            grunt.task.run(['ngconstant:demo-dev']);
-        }
-
-        grunt.task.run([
-            'ngtemplates:dist',
-            //'ngtemplates:dist-demo',
-            //'concurrent:dist',
-            'autoprefixer:dist',
-            'concat',
-            'ngAnnotate',
-            'copy:dist',
-            'cssmin',
-            'uglify',
-            'filerev',
-            'usemin',
-            'htmlmin'
-        ]);
-    });
-
-    grunt.registerTask('package', 'Prepare module to be published to NuGet', function () {
-        grunt.task.run([
-            'clean:dist',
-            'useminPrepare',
-            'ngtemplates:dist',
-            //'concurrent:dist',
-            'autoprefixer:dist',
-            'concat',
-            'ngAnnotate',
-            'copy:package',
-            'cssmin',
-            'uglify',
-            'usemin',
-            'clean:after-package',
-            'rd-update-package-version',
-            'rd-nuspec'
-        ]);
-    });
-
-    grunt.registerMultiTask('rd-bower', "Install or Update Bower Dependencies", function () {
+    grunt.registerMultiTask('rd-bower-install', "Install or Update Bower Dependencies", function () {
+        grunt.log.writeln(JSON.stringify(this.options()));
         /*  prepare options  */
         var options = this.options({
             /*  bower configuration options (renderer specific)  */
@@ -639,28 +562,73 @@ module.exports = function (grunt) {
             });
     });
 
-    grunt.registerTask('install', 'Installs dependencies', function () {
-        grunt.task.run([
-            //'clean:nuget',
-            'clean:install'
-        ]);
-
-        var target = grunt.option('target');
-
-        //if (target === 'qa' || target === 'uat') {
-        //    grunt.task.run(['rd-install:prod']);
-        //} else {
-        //    grunt.task.run(['rd-install:dev']);
-        //}
+    grunt.registerTask('serve', 'Compile then start a "connect" web server', function (target) {
+        if (target === 'dist') {
+            return grunt.task.run([
+                'package',
+                'connect:dist:keepalive'
+            ]);
+        }
 
         grunt.task.run([
-            'rd-bower:dev',
-            //'clean:nuget'
+            //'concurrent:server',
+            'autoprefixer:server',
+            'ngconstant:dev',
+            'connect:livereload',
+            'watch'
         ]);
     });
 
+    //grunt.registerTask('test', [
+    //    'jshint:all',
+    //    'ngtemplates:test',
+    //    'karma'
+    //]);
+
+    grunt.registerTask('package', 'Prepare module to be published to NuGet', function () {
+        grunt.task.run([
+            'clean:dist',
+            'useminPrepare',
+            'ngtemplates:dist',
+            //'concurrent:dist',
+            'autoprefixer:dist',
+            'concat',
+            'ngAnnotate',
+            'copy:package',
+            'cssmin',
+            'uglify',
+            'usemin',
+            'clean:after-package',
+            'rd-update-package-version',
+            'rd-nuspec'
+        ]);
+    });
+
+
+
+    grunt.registerTask('install', 'Installs dependencies', (function() {
+
+        var configs = ['alpha', 'beta', 'mvp', 'proto', 'qa', 'prod', 'dev'];
+
+        return function () {
+            grunt.task.run([
+                //'clean:nuget',
+                'clean:install'
+            ]);
+
+            var tmp = configs.indexOf((grunt.option('environment'))),
+                env = tmp !== -1 ? configs[tmp] : 'dev';
+
+            grunt.task.run([
+                //'rd-bower-install:dev',
+                'ngconstant:' + env
+                //'clean:nuget'
+            ]);
+        }
+
+    }()));
+
     grunt.registerTask('default', [
-        //'test',
-        'build'
+        //'test'
     ]);
 };
