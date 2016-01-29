@@ -8,6 +8,10 @@
     /** @ngInject */
     function Service() {
 
+        this.$get = function () {
+            return this;
+        };
+
     }
 
 })();

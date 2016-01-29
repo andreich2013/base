@@ -3,7 +3,7 @@
 
     angular
         .module('reeldeal')
-        .controller('rd.main.controller', Controller);
+        .controller('rd.main.ctrl', Controller);
 
     /** @ngInject */
     function Controller($scope) {

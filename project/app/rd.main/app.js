@@ -5,7 +5,10 @@
         .module('reeldeal', [
             'ngCookies',
             'ngSanitize',
-            'ngTouch'
+            'ui.router',
+            'ngMaterial',
+
+            'rd.common'
         ]);
 
 })();

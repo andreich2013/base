@@ -114,23 +114,6 @@ module.exports = function (grunt) {
             }
         },
 
-        // Make sure code styles are up to par and there are no obvious mistakes
-        //jshint: {
-        //    options: {
-        //        jshintrc: '.jshintrc',
-        //        reporter: require('jshint-stylish')
-        //    },
-        //    all: {
-        //        src: [
-        //            'Gruntfile.js',
-        //            '<%= rdmodule.app %>/**/*.js'
-        //        ]
-        //    },
-        //    test: {
-        //        src: ['<%= rdmodule.app %>/**/*.spec.js']
-        //    }
-        //},
-
         // Empties folders to start fresh
         clean: {
             dist: {
@@ -468,6 +451,13 @@ module.exports = function (grunt) {
                     production: false,
                     forceLatest: true
                 }
+            },
+            prod: {
+                options: {
+                    directory: '<%= rdmodule.bower %>',
+                    production: true,
+                    forceLatest: true
+                }
             }
         }
 
@@ -580,12 +570,11 @@ module.exports = function (grunt) {
     });
 
     //grunt.registerTask('test', [
-    //    'jshint:all',
     //    'ngtemplates:test',
     //    'karma'
     //]);
 
-    grunt.registerTask('package', 'Prepare module to be published to NuGet', function () {
+    grunt.registerTask('package', 'Prepare module to be published to production', function () {
         grunt.task.run([
             'clean:dist',
             'useminPrepare',
@@ -620,7 +609,7 @@ module.exports = function (grunt) {
                 env = tmp !== -1 ? configs[tmp] : 'dev';
 
             grunt.task.run([
-                //'rd-bower-install:dev',
+                'rd-bower-install:dev',
                 'ngconstant:' + env
                 //'clean:nuget'
             ]);
