@@ -19,7 +19,7 @@
                     },
                     'top@rd': {
                         templateUrl: 'rd.layout/templates/header.html',
-                        controller: 'rd.header.controller'
+                        controller: 'rd.header.ctrl'
                     },
                     'left@rd': {
                         templateUrl: 'rd.layout/templates/left-side.html',
@@ -32,6 +32,7 @@
                 }
             })
             .state({
+                parent: 'rd',
                 name: '404',
                 url: '/404',
                 templateUrl: 'rd.layout/templates/404.html',
