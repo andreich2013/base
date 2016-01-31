@@ -338,14 +338,14 @@ module.exports = function (grunt) {
         },
 
         // Run some tasks in parallel to speed up the build process
-        concurrent: {
-            server: [
-                'compass:server'
-            ],
-            dist: [
-                'compass:dist'
-            ]
-        },
+        //concurrent: {
+        //    server: [
+        //        'compass:server'
+        //    ],
+        //    dist: [
+        //        'compass:dist'
+        //    ]
+        //},
 
         // Test settings
         karma: {
@@ -369,7 +369,7 @@ module.exports = function (grunt) {
                     removeScriptTypeAttributes: true,
                     removeStyleLinkTypeAttributes: true
                 },
-                usemin: 'scripts/<%= rdmodule.name %>.js'
+                usemin: ['scripts/<%= rdmodule.name %>.js', 'scripts/vendor.js']
             },
             dist: {
                 cwd: '<%= rdmodule.app %>',
