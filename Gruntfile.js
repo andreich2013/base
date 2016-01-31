@@ -479,6 +479,10 @@ module.exports = function (grunt) {
     //]);
 
     grunt.registerTask('package', 'Prepare module to be published to production', function () {
+        if(!grunt.file.exists(appConfig.dist)){
+            grunt.file.mkdir(appConfig.dist);
+        }
+
         grunt.task.run([
             'clean:dist',
             'useminPrepare',
