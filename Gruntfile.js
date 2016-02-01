@@ -369,7 +369,7 @@ module.exports = function (grunt) {
                     removeScriptTypeAttributes: true,
                     removeStyleLinkTypeAttributes: true
                 },
-                usemin: ['scripts/<%= rdmodule.name %>.js', 'scripts/vendor.js']
+                usemin: 'scripts/<%= rdmodule.name %>.js'
             },
             dist: {
                 cwd: '<%= rdmodule.app %>',
@@ -512,12 +512,11 @@ module.exports = function (grunt) {
             ]);
 
             var tmp = configs.indexOf((grunt.option('environment'))),
-                env = tmp !== -1 ? configs[tmp] : 'dev';
+                env = tmp !== -1 ? configs[tmp] : "dev";
 
             grunt.task.run([
-                'bower-install-simple:' + env === 'prod' ? env : 'dev',
+                'bower-install-simple:' + (env === 'prod' ? env : 'dev'),
                 'ngconstant:' + env
-                //'clean:nuget'
             ]);
         }
 
