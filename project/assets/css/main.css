@@ -1,0 +1,25 @@
+
+.rd-main-wrapper {
+    position: relative;
+}
+
+.rd-main-content {
+    margin: 0 50px;
+    background: #b3b3b3;
+}
+
+.rd-side-left,
+.rd-side-right {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    width: 300px;
+}
+
+.rd-side-left {
+    left: -250px;
+}
+
+.rd-side-right {
+    right: -250px;
+}
