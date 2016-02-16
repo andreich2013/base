@@ -9,32 +9,25 @@ module.exports = function (grunt) {
     require('time-grunt')(grunt);
 
     // Configurable paths for the application
-    var appConfig = {
+    var config = {
             name: "reeldeal",
-            root: 'project',
+            root: '.',
             app: './project/app',
             bower: './project/bower_components',
             assets: './project/assets',
             dist: './dist',
-            config: './config'
+            config: './config',
+            env: ['dev', 'qa', 'prod']
         },
         modRewrite = require('connect-modrewrite');
 
     // Define the configuration for all the tasks
     grunt.initConfig({
         // Project settings
-        rdmodule: appConfig,
+        _module: config,
 
         // Watches files for changes and runs tasks based on the changed files
         watch: {
-            //jsTest: {
-            //    files: ['<%= rdmodule.app %>/**/*.spec.js'],
-            //    tasks: ['ngtemplates:test', 'karma']
-            //},
-            //compass: {
-            //    files: ['<%= rdmodule.assets %>/**/*.{scss,sass}'],
-            //    tasks: ['compass:server', 'autoprefixer:server']
-            //},
             gruntfile: {
                 files: ['Gruntfile.js']
             },
@@ -43,18 +36,18 @@ module.exports = function (grunt) {
                     livereload: '<%= connect.livereload.options.livereload %>'
                 },
                 files: [
-                    '<%= rdmodule.app %>/**/*.{js,html}',
-                    '<%= rdmodule.assets %>/{,*/}*.{css,json}',
-                    '<%= rdmodule.assets %>/img/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+                    '<%= _module.app %>/**/*.{js,html}',
+                    '<%= _module.assets %>/{,*/}*.{css,json}',
+                    '<%= _module.assets %>/img/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             },
-            //constants: {
-            //    files: ['<%= rdmodule.root %>/layout.demo.config.json'],
-            //    tasks: ['ngconstant:demo-dev'],
-            //    options: {
-            //        livereload: '<%= connect.livereload.options.livereload %>'
-            //    }
-            //}
+            constants: {
+                files: ['<%= _module.app %>/env.js'],
+                tasks: ['ngconstant:dev'],
+                options: {
+                    livereload: '<%= connect.livereload.options.livereload %>'
+                }
+            }
         },
 
         // The actual grunt server settings
@@ -79,24 +72,23 @@ module.exports = function (grunt) {
             },
             livereload: {
                 options: {
-                    //open: true,
                     livereload: 35729,
                     middleware: function (connect) {
                         return [
                             modRewrite(['^[^\\.]*$ /index.html [L]']),
-                            connect.static(appConfig.app),
+                            connect.static(config.app),
                             connect.static('.tmp'),
                             connect().use(
                                 '/assets',
-                                connect.static(appConfig.assets)
+                                connect.static(config.assets)
                             ),
                             connect().use(
                                 '/bower_components',
-                                connect.static(appConfig.bower)
+                                connect.static(config.bower)
                             ),
                             connect().use(
                                 '/app',
-                                connect.static(appConfig.app)
+                                connect.static(config.app)
                             )
                         ];
                     }
@@ -104,8 +96,7 @@ module.exports = function (grunt) {
             },
             dist: {
                 options: {
-                    //open: true,
-                    base: '<%= rdmodule.dist %>'
+                    base: '<%= _module.dist %>'
                 }
             }
         },
@@ -117,14 +108,13 @@ module.exports = function (grunt) {
                     dot: true,
                     src: [
                         '.tmp',
-                        '<%= rdmodule.dist %>/{,*/}*',
-                        '!<%= rdmodule.dist %>/.git{,*/}*'
+                        '<%= _module.dist %>/{,*/}*',
+                        '!<%= _module.dist %>/.git{,*/}*'
                     ]
                 }]
             },
-            //nuget: ["<%= rdmodule.packages %>", 'packages.config'],
-            install: ['<%= rdmodule.bower %>'],
-            "after-package": ['<%= rdmodule.dist %>/**/*{demo,vendor}*.{js,css}']
+            install: ['<%= _module.bower %>'],
+            "after-package": ['<%= _module.dist %>/**/*{vendor}*.{js,css}']
         },
 
         // Add vendor prefixed styles
@@ -136,59 +126,32 @@ module.exports = function (grunt) {
                 options: {
                     map: true
                 },
-                files: [{
-                    expand: true,
-                    cwd: '<%= rdmodule.assets %>/css/',
-                    src: '{,*/}*.css',
-                    dest: '<%= rdmodule.assets %>/css/'
-                }]
+                files: [
+                    {
+                        expand: true,
+                        cwd: '<%= _module.assets %>/styles/',
+                        src: '{,*/}*.css',
+                        dest: '<%= _module.assets %>/styles/'
+                    }
+                ]
             },
             dist: {
                 files: [{
                     expand: true,
-                    cwd: '<%= rdmodule.assets %>/css/',
+                    cwd: '<%= _module.assets %>/styles/',
                     src: '{,*/}*.css',
-                    dest: '<%= rdmodule.assets %>/css/'
+                    dest: '<%= _module.assets %>/styles/'
                 }]
             }
         },
-
-        // Compiles Sass to CSS and generates necessary files if requested
-        //compass: {
-        //    options: {
-        //        sassDir: '<%= rdmodule.assets %>/scss/',
-        //        cssDir: '<%= rdmodule.assets %>/scss/',
-        //        generatedImagesDir: '.tmp/img/generated',
-        //        imagesDir: '<%= rdmodule.assets %>/img/',
-        //        javascriptsDir: '<%= rdmodule.app %>',
-        //        fontsDir: '<%= rdmodule.assets %>/fonts',
-        //        importPath: '<%= rdmodule.bower %>',
-        //        httpImagesPath: '/assets/img/',
-        //        httpGeneratedImagesPath: '/assets/img/generated',
-        //        httpFontsPath: '/assets/fonts',
-        //        relativeAssets: false,
-        //        assetCacheBuster: false,
-        //        raw: 'Sass::Script::Number.precision = 10\n'
-        //    },
-        //    dist: {
-        //        options: {
-        //            generatedImagesDir: '<%= rdmodule.dist %>/assets/img/generated'
-        //        }
-        //    },
-        //    server: {
-        //        options: {
-        //            sourcemap: true
-        //        }
-        //    }
-        //},
 
         // Renames files for browser caching purposes
         filerev: {
             dist: {
                 src: [
-                    '<%= rdmodule.dist %>/scripts/{,*/}*.js',
-                    '<%= rdmodule.dist %>/assets/styles/{,*/}*.css',
-                    '<%= rdmodule.dist %>/assets/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
+                    '<%= _module.dist %>/scripts/{,*/}*.js',
+                    '<%= _module.dist %>/assets/styles/{,*/}*.css',
+                    '<%= _module.dist %>/assets/images/{,*/}*.{png,jpg,jpeg,gif,webp,svg}'
                 ]
             }
         },
@@ -197,9 +160,9 @@ module.exports = function (grunt) {
         // concat, minify and revision files. Creates configurations in memory so
         // additional tasks can operate on them
         useminPrepare: {
-            html: '<%= rdmodule.app %>/index.html',
+            html: '<%= _module.app %>/index.html',
             options: {
-                dest: '<%= rdmodule.dist %>',
+                dest: '<%= _module.dist %>',
                 flow: {
                     html: {
                         steps: {
@@ -214,16 +177,16 @@ module.exports = function (grunt) {
 
         // Performs rewrites based on filerev and the useminPrepare configuration
         usemin: {
-            html: ['<%= rdmodule.dist %>/*.html'],
-            css: ['<%= rdmodule.dist %>/assets/styles/{,*/}*.css'],
-            js: ['<%= rdmodule.dist %>/scripts/**/*.js'],
+            html: ['<%= _module.dist %>/*.html'],
+            css: ['<%= _module.dist %>/assets/styles/{,*/}*.css'],
+            js: ['<%= _module.dist %>/scripts/**/*.js'],
             options: {
                 assetsDirs: [
-                    '<%= rdmodule.dist %>',
-                    '<%= rdmodule.dist %>/assets',
-                    '<%= rdmodule.dist %>/assets/styles',
-                    '<%= rdmodule.dist %>/assets/images',
-                    '<%= rdmodule.dist %>/assets/fonts'
+                    '<%= _module.dist %>',
+                    '<%= _module.dist %>/assets',
+                    '<%= _module.dist %>/assets/styles',
+                    '<%= _module.dist %>/assets/images',
+                    '<%= _module.dist %>/assets/fonts'
                 ]
             }
         },
@@ -237,12 +200,14 @@ module.exports = function (grunt) {
                     removeCommentsFromCDATA: true,
                     removeOptionalTags: true
                 },
-                files: [{
-                    expand: true,
-                    cwd: '<%= rdmodule.dist %>/',
-                    src: ['*.html'],
-                    dest: '<%= rdmodule.dist %>'
-                }]
+                files: [
+                    {
+                        expand: true,
+                        cwd: '<%= _module.dist %>/',
+                        src: ['*.html'],
+                        dest: '<%= _module.dist %>'
+                    }
+                ]
             }
         },
 
@@ -257,12 +222,14 @@ module.exports = function (grunt) {
         //only project files
         ngAnnotate: {
             dist: {
-                files: [{
-                    expand: true,
-                    cwd: '.tmp/concat/scripts',
-                    src: ['*.js', '!vendor.js'],
-                    dest: '.tmp/concat/scripts'
-                }]
+                files: [
+                    {
+                        expand: true,
+                        cwd: '.tmp/concat/scripts',
+                        src: ['*.js', '!vendor.js'],
+                        dest: '.tmp/concat/scripts'
+                    }
+                ]
             }
         },
 
@@ -270,95 +237,47 @@ module.exports = function (grunt) {
         copy: {
             dist: {
                 files: [
-                //{
-                //    expand: true,
-                //    dot: true,
-                //    cwd: '<%= rdmodule.bower %>/TipUI/tipui/styles/fonts',
-                //    dest: '<%= rdmodule.dist %>/assets/fonts',
-                //    src: ['{,*/}*.*']
-                //}, {
-                //    expand: true,
-                //    dot: true,
-                //    cwd: '<%= rdmodule.bower %>/TipUI/tipui/styles/images',
-                //    dest: '<%= rdmodule.dist %>/assets/images',
-                //    src: ['{,*/}*.*']
-                //},
-                {
-                    expand: true,
-                    dot: true,
-                    cwd: '<%= rdmodule.app %>/',
-                    dest: '<%= rdmodule.dist %>',
-                    src: ['*.html']
-                },
-                {
-                    expand: true,
-                    cwd: '<%= rdmodule.assets %>/img/',
-                    src: '{,*/}*.{png,jpg,jpeg,gif,svg}',
-                    dest: '<%= rdmodule.dist %>/assets/images'
-                },
-                //{
-                //    expand: true,
-                //    dot: true,
-                //    cwd: '<%= rdmodule.bower %>/Deloitte.TIP.AA.Client.UI/',
-                //    dest: '<%= rdmodule.dist %>/assets/Deloitte.TIP.AA.Client.UI',
-                //    src: ['**/*.{html,js}', '!angular-*.js']
-                //},
-                //{
-                //    expand: true,
-                //    dot: true,
-                //    cwd: '<%= rdmodule.root %>/',
-                //    src: ['Web.config', 'website.publishproj', 'App_Data/PublishProfiles/*.pubxml'],
-                //    dest: '<%= rdmodule.dist %>'
-                //}
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: '<%= _module.app %>/',
+                        dest: '<%= _module.dist %>',
+                        src: ['*.html']
+                    },
+                    {
+                        expand: true,
+                        cwd: '<%= _module.assets %>/images/',
+                        src: '{,*/}*.{png,jpg,jpeg,gif,svg}',
+                        dest: '<%= _module.dist %>/assets/images'
+                    }
                 ]
             },
             package: {
                 files: [
-                    //{
-                    //    expand: true,
-                    //    cwd: '.',
-                    //    dest: '<%= rdmodule.dist %>',
-                    //    src: ['tip.pckg.json']
-                    //},
-                {
-                    expand: true,
-                    cwd: '<%= rdmodule.assets %>/img/',
-                    src: '{,*/}*.{png,jpg,jpeg,gif,svg}',
-                    dest: '<%= rdmodule.dist %>/assets/images'
-                },
-                {
-                    expand: true,
-                    dot: true,
-                    cwd: '<%= rdmodule.app %>/',
-                    dest: '<%= rdmodule.dist %>',
-                    src: ['*.md']
-                }
+                    {
+                        expand: true,
+                        cwd: '<%= _module.assets %>/images/',
+                        src: '{,*/}*.{png,jpg,jpeg,gif,svg}',
+                        dest: '<%= _module.dist %>/assets/images'
+                    },
+                    {
+                        expand: true,
+                        dot: true,
+                        cwd: '.',
+                        dest: '<%= _module.dist %>',
+                        src: ['*.md']
+                    }
                 ]
             }
         },
 
-        // Run some tasks in parallel to speed up the build process
-        //concurrent: {
-        //    server: [
-        //        'compass:server'
-        //    ],
-        //    dist: [
-        //        'compass:dist'
-        //    ]
-        //},
-
         // Test settings
-        karma: {
-            //unit: {
-            //    configFile: 'karma.conf.js',
-            //    singleRun: true
-            //}
-        },
+        karma: {},
 
         // compile angular templates & append to app.js
         ngtemplates: {
             options: {
-                module: '<%= rdmodule.name %>',
+                module: '<%= _module.name %>',
                 htmlmin: {
                     collapseBooleanAttributes: true,
                     collapseWhitespace: true,
@@ -369,77 +288,60 @@ module.exports = function (grunt) {
                     removeScriptTypeAttributes: true,
                     removeStyleLinkTypeAttributes: true
                 },
-                usemin: 'scripts/<%= rdmodule.name %>.js'
+                usemin: 'scripts/main.js'
             },
             dist: {
-                cwd: '<%= rdmodule.app %>',
+                cwd: '<%= _module.app %>',
                 src: [
                     '**/*.html',
                     '!index.html'
                 ],
                 dest: '.tmp/templateCache.js'
-            },
-            //test: {
-            //    options: {
-            //        usemin: undefined
-            //    },
-            //    cwd: '<%= rdmodule.app %>',
-            //    src: [
-            //        '**/*.html',
-            //        '!layout.demo*/**/*.html',
-            //        '!index.html'
-            //    ],
-            //    dest: '.tmp/templateCache.js'
-            //}
+            }
         },
 
         ngconstant: {
             options: {
                 deps: null,
                 wrap: true,
-                dest: '<%= rdmodule.app %>/rd.env.js',
-                name: '<%= rdmodule.name %>'
+                dest: '<%= _module.app %>/env.js',
+                name: '<%= _module.name %>'
             },
             "dev": {
                 constants: {
-                    "rdENV": grunt.file.readJSON(appConfig.config + '/dev.json')
+                    "ENV": grunt.file.readJSON(config.config + '/dev.json')
                 }
             },
             "qa": {
                 constants: {
-                    "rdENV": grunt.file.readJSON(appConfig.config + '/qa.json')
+                    "ENV": grunt.file.readJSON(config.config + '/qa.json')
                 }
             },
             "prod": {
                 constants: {
-                    "rdENV": grunt.file.readJSON(appConfig.config + '/prod.json')
-                }
-            },
-            "proto": {
-                constants: {
-                    "rdENV": grunt.file.readJSON(appConfig.config + '/proto.json')
+                    "ENV": grunt.file.readJSON(config.config + '/prod.json')
                 }
             },
             "mvp": {
                 constants: {
-                    "rdENV": grunt.file.readJSON(appConfig.config + '/mvp.json')
+                    "ENV": grunt.file.readJSON(config.config + '/mvp.json')
                 }
             },
             "alpha": {
                 constants: {
-                    "rdENV": grunt.file.readJSON(appConfig.config + '/alpha.json')
+                    "ENV": grunt.file.readJSON(config.config + '/alpha.json')
                 }
             },
             "beta": {
                 constants: {
-                    "rdENV": grunt.file.readJSON(appConfig.config + '/beta.json')
+                    "ENV": grunt.file.readJSON(config.config + '/beta.json')
                 }
             }
         },
 
         "bower-install-simple": {
             options: {
-                directory: '<%= rdmodule.bower %>',
+                directory: '<%= _module.bower %>',
                 forceLatest: true
             },
             dev: {
@@ -465,7 +367,6 @@ module.exports = function (grunt) {
         }
 
         grunt.task.run([
-            //'concurrent:server',
             'autoprefixer:server',
             'ngconstant:dev',
             'connect:livereload',
@@ -473,21 +374,15 @@ module.exports = function (grunt) {
         ]);
     });
 
-    //grunt.registerTask('test', [
-    //    'ngtemplates:test',
-    //    'karma'
-    //]);
-
     grunt.registerTask('package', 'Prepare module to be published to production', function () {
-        if(!grunt.file.exists(appConfig.dist)){
-            grunt.file.mkdir(appConfig.dist);
+        if(!grunt.file.exists(config.dist)){
+            grunt.file.mkdir(config.dist);
         }
 
         grunt.task.run([
             'clean:dist',
             'useminPrepare',
             'ngtemplates:dist',
-            //'concurrent:dist',
             'autoprefixer:dist',
             'concat',
             'ngAnnotate',
@@ -501,28 +396,17 @@ module.exports = function (grunt) {
 
 
 
-    grunt.registerTask('install', 'Installs dependencies', (function() {
+    grunt.registerTask('install', 'Installs dependencies', function () {
+        grunt.task.run([
+            'clean:install'
+        ]);
 
-        var configs = ['alpha', 'beta', 'mvp', 'proto', 'qa', 'prod', 'dev'];
+        var tmp = config.env.indexOf((grunt.option('environment'))),
+            env = tmp !== -1 ? config.env[tmp] : 'dev';
 
-        return function () {
-            grunt.task.run([
-                //'clean:nuget',
-                'clean:install'
-            ]);
-
-            var tmp = configs.indexOf((grunt.option('environment'))),
-                env = tmp !== -1 ? configs[tmp] : "dev";
-
-            grunt.task.run([
-                'bower-install-simple:' + (env === 'prod' ? env : 'dev'),
-                'ngconstant:' + env
-            ]);
-        }
-
-    }()));
-
-    //grunt.registerTask('default', [
-    //    //'test'
-    //]);
+        grunt.task.run([
+            'bower-install-simple:' + (env === 'prod' ? env : 'dev'),
+            'ngconstant:' + env
+        ]);
+    });
 };

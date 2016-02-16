@@ -1,6 +1,9 @@
 (function() {
     'use strict';
 
+    /**
+     * namespace "rd" - reel deal
+     */
     angular
         .module('reeldeal', [
             'ngCookies',

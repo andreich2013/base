@@ -1,11 +1,9 @@
 <div ui-view="top" layout="row"></div>
 
-<div flex layout="row" class="rd-main-wrapper">
+<div flex layout="row">
 
-    <div ui-view="left" class="rd-side-left"></div>
+    <md-content ui-view flex class="main-content"></md-content>
 
-    <md-content ui-view flex class="rd-main-content"></md-content>
-
-    <div ui-view="right" class="rd-side-right"></div>
+    <md-sidenav ui-view="right" md-component-id="right" class="md-sidenav-right"></md-sidenav>
 
 </div>

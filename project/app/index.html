@@ -11,15 +11,16 @@
 
         <!-- build:css(project) assets/styles/vendor.css -->
         <link href="bower_components/angular-material/angular-material.css" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
         <!-- endbuild -->
 
-        <!-- build:css(project) assets/styles/reeldeal.css -->
-        <link href="assets/css/main.css" rel="stylesheet">
+        <!-- build:css(project) assets/styles/main.css -->
+        <link href="assets/styles/css/main.css" rel="stylesheet">
         <!-- endbuild -->
     </head>
     <body ng-app="reeldeal">
 
-        <main layout-fill layout="column" ui-view></main>
+        <div layout-fill layout="column" ui-view></div>
 
         <!-- build:js(project) scripts/vendor.js -->
         <script src="bower_components/angular/angular.js"></script>
@@ -32,9 +33,9 @@
         <script src="bower_components/angular-material/angular-material.js"></script>
         <!-- endbuild -->
 
-        <!-- build:js({.tmp,project}) scripts/reeldeal.js -->
+        <!-- build:js({.tmp,project}) scripts/main.js -->
         <script src="app/rd.main/app.js"></script>
-        <script src="app/rd.env.js"></script>
+        <script src="app/env.js"></script>
         <script src="app/rd.main/rd.events.js"></script>
         <script src="app/rd.main/services/rd.config.svc.js"></script>
         <script src="app/rd.main/services/rd.context.svc.js"></script>
@@ -46,8 +47,11 @@
         <script src="app/rd.layout/controllers/rd.layout.ctrl.js"></script>
         <script src="app/rd.layout/controllers/rd.leftSide.ctrl.js"></script>
         <script src="app/rd.layout/controllers/rd.rightSide.ctrl.js"></script>
+        <script src="app/rd.layout/controllers/rd.bottomSheet.ctrl.js"></script>
+        <script src="app/rd.layout/services/rd.topNav.svc.js"></script>
 
         <script src="app/rd.common/rd.common.js"></script>
+        <script src="app/rd.common/controllers/rd.search.ctrl.js"></script>
         <!-- endbuild -->
     </body>
 </html>
